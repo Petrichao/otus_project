@@ -1,0 +1,20 @@
+добавипть репо графаны helm 
+sudo helm repo add grafana https://grafana.github.io/helm-charts
+
+sudo helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+sudo helm upgrade --install general-ingress ingress-nginx/ingress-nginx \
+  --namespace otus-proj \
+  --set controller.service.type=NodePort \
+  --set controller.service.nodePorts.http=30080 \
+  --set controller.ingressClassResource.name=general-nginx
+
+sudo helm upgrade --install monitoring-ingress ingress-nginx/ingress-nginx \
+  --namespace monitoring \
+  --set controller.service.type=NodePort \
+  --set controller.service.nodePorts.http=30081 \
+  --set controller.ingressClassResource.name=monitoring-nginx
+
+git clone https://github.com/GoogleCloudPlatform/microservices-demo
+
+curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+sudo install skaffold /usr/local/bin/
