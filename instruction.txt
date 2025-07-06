@@ -1,4 +1,10 @@
+ansible-playbook -i inventory/mycluster/inventory.ini -b -v --private-key=~/.ssh/id_rsa cluster.yml
+
+
 добавипть репо графаны helm 
+
+
+
 sudo helm repo add grafana https://grafana.github.io/helm-charts
 
 sudo helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -8,11 +14,9 @@ sudo helm upgrade --install general-ingress ingress-nginx/ingress-nginx \
   --set controller.service.nodePorts.http=30080 \
   --set controller.ingressClassResource.name=general-nginx
 
-sudo helm upgrade --install monitoring-ingress ingress-nginx/ingress-nginx \
-  --namespace monitoring \
-  --set controller.service.type=NodePort \
-  --set controller.service.nodePorts.http=30081 \
-  --set controller.ingressClassResource.name=monitoring-nginx
+`sudo helm install grafana grafana/grafana --namespace monitoring --values ./manifests/values/v-grafana.yaml`
+sudo helm install loki grafana/loki --namespace monitoring --values manifests/values/v-loki.yaml
+
 
 git clone https://github.com/GoogleCloudPlatform/microservices-demo
 
