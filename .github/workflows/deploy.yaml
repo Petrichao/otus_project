@@ -1,0 +1,50 @@
+name: Deploy otus project
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install SSH client
+      run: sudo apt-get update && sudo apt-get install -y sshpass
+
+    - name: SSH and run commands
+      env:
+        SSHPASS: ${{ secrets.SSH_PASSWORD }}
+      run: |
+        sshpass -e ssh -o StrictHostKeyChecking=no -p 32323 petrich@46.161.6.169 <<'EOF'
+          set -e
+          git clone https://github.com/kubernetes-sigs/kubespray.git
+          git clone https://github.com/Petrichao/otus_project.git
+
+          cd kubespray
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+          ansible-playbook -i /home/petrich/otus_project/otus-cluster/inventory.ini -b -v --private-key=~/.ssh/id_rsa cluster.yml
+
+          sudo kubectl apply -f /home/petrich/otus_project/manifests/ns-monitoring.yaml
+          sudo kubectl apply -f /home/petrich/otus_project/manifests/ns-otus-proj.yaml
+          sudo kubectl apply -f /home/petrich/otus_project/manifests/dp-nginx-test.yaml
+          sudo kubectl apply -f /home/petrich/otus_project/manifests/svc-nginx-service-test.yaml
+
+          sudo helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          sudo helm upgrade --install general-ingress ingress-nginx/ingress-nginx \
+            --namespace otus-proj \
+            --set controller.service.type=NodePort \
+            --set controller.service.nodePorts.http=30080 \
+            --set controller.ingressClassResource.name=general-nginx
+
+          sudo kubectl apply -f /home/petrich/otus_project/manifests/ing-general.yaml
+
+          sudo helm repo add grafana https://grafana.github.io/helm-charts
+          sudo helm install grafana grafana/grafana --namespace monitoring --values /home/petrich/otus_project/manifests/values/v-grafana.yaml
+          sudo helm install loki grafana/loki --namespace monitoring --values /home/petrich/otus_project/manifests/values/v-loki.yaml
+
+          sudo kubectl apply -f /home/petrich/otus_project/manifests/svc-grafana-proxy.yaml
+          sudo kubectl apply -f /home/petrich/otus_project/manifests/ds-promtail.yaml
+        EOF
