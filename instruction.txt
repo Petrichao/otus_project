@@ -8,7 +8,16 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
+sudo kubectl patch configmap argocd-cmd-params-cm -n argocd \
+  --type merge \
+  -p '{"data":{"server.rootpath":"/argocd"}}'
+
+
+
 ansible-playbook -i /home/petrich/otus_project/otus-cluster/inventory.ini -b -v --private-key=~/.ssh/id_rsa cluster.yml
+
+sudo kubectl apply -f /home/petrich/otus_project/manifests/ns-argocd.yaml
+sudo kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 
 sudo kubectl apply -f /home/petrich/otus_project/manifests/ns-monitoring.yaml

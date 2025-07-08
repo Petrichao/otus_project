@@ -1,6 +1,6 @@
 # env:
-#   GF_SERVER_ROOT_URL: "http://46.161.6.169:30081/grafana/"
-#   GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+  #  GF_SERVER_ROOT_URL: "http://46.161.6.169:30081/grafana/"
+  #  GF_SERVER_SERVE_FROM_SUB_PATH: "true"
 
 # persistence:
 #   enabled: false
@@ -895,7 +895,9 @@ grafana.ini:
   grafana_net:
     url: https://grafana.net
   server:
-    root_url: http://46.161.6.169:30081/grafana/
+    root_url: "%(protocol)s://%(domain)s/grafana/"
+    serve_from_sub_path: true
+    
     # domain: "{{ if (and .Values.ingress.enabled .Values.ingress.hosts) }}{{ tpl (.Values.ingress.hosts | first) . }}{{ else }}''{{ end }}"
 ## grafana Authentication can be enabled with the following values on grafana.ini
  # server:
