@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/Petrichao/otus_project.git
     targetRevision: HEAD
-    path: manifests/argo-apps
+    path: manifests/argocd-apps
     directory:
       recurse: true
       include: '*.yaml'
