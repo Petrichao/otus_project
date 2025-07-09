@@ -10,8 +10,48 @@ spec:
     chart: grafana
     targetRevision: 9.2.10
     helm:
-      valueFiles:
-        - ../grafana/v-grafana.yaml      # Только если ты используешь values из этого же репо
+      values: |
+        service:
+          enabled: true
+          type: ClusterIP
+          ipFamilyPolicy: ""
+          ipFamilies: []
+          loadBalancerIP: ""
+          loadBalancerClass: ""
+          loadBalancerSourceRanges: []
+          port: 3000
+          targetPort: 3000
+          annotations: {}
+          labels: {}
+          portName: service
+          appProtocol: ""
+          sessionAffinity: ""
+        adminUser: admin
+        adminPassword: admin
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+              - name: Loki
+                type: loki
+                url: http://loki.monitoring.svc.cluster.local:3100
+                access: proxy
+                isDefault: true
+        grafana.ini:
+          paths:
+            data: /var/lib/grafana/
+            logs: /var/log/grafana
+            plugins: /var/lib/grafana/plugins
+            provisioning: /etc/grafana/provisioning
+          analytics:
+            check_for_updates: true
+          log:
+            mode: console
+          grafana_net:
+            url: https://grafana.net
+          server:
+            root_url: "%(protocol)s://%(domain)s/grafana/"
+            serve_from_sub_path: true
       parameters: []
   destination:
     server: https://kubernetes.default.svc
