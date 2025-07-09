@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: otus-root
+  namespace: argocd
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  project: default
+  source:
+    repoURL: https://github.com/Petrichao/otus_project.git
+    targetRevision: HEAD
+    path: manifests/argo-apps
+    directory:
+      recurse: true
+      include: '*.yaml'
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
