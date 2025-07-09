@@ -6,12 +6,13 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Petrichao/otus_project.git
-    targetRevision: HEAD
-    path: manifests/grafana
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: latest
     helm:
       valueFiles:
-        - ./v-grafana.yaml
+        - ../grafana/v-grafana.yaml
+      parameters: []
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

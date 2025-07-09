@@ -6,12 +6,13 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Petrichao/otus_project.git
-    targetRevision: HEAD
-    path: manifests/loki
+    repoURL: https://grafana.github.io/helm-charts
+    chart: loki
+    targetRevision: latest
     helm:
       valueFiles:
-        - ./v-loki.yaml
+        - ../grafana/v-loki.yaml
+      parameters: []
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

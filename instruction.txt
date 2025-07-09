@@ -44,6 +44,6 @@ sudo helm upgrade --install general-ingress ingress-nginx/ingress-nginx \
 Применить манифест manifests/grafana/ns-monitoring.yaml
 Применить манифест manifests/grafana/ds-promtail.yaml
 sudo helm repo add grafana https://grafana.github.io/helm-charts
-sudo helm install grafana grafana/grafana --namespace monitoring --values /home/petrich/otus_project/manifests/values/v-grafana.yaml`
+sudo helm install grafana grafana/grafana --namespace monitoring --values /home/petrich/otus_project/manifests/values/v-grafana.yaml
 sudo helm install loki grafana/loki --namespace monitoring --values /home/petrich/otus_project/manifests/values/v-loki.yaml
 http://loki.monitoring.svc.cluster.local:3100
