@@ -16,6 +16,24 @@ jobs:
         SSHPASS: ${{ secrets.SSH_PASSWORD }}
       run: |
         sshpass -e ssh -o StrictHostKeyChecking=no -p 32323 petrich@46.161.6.169 <<'EOF'
-          set -e
-          echo "test"
+          ssh -p 32323 -o StrictHostKeyChecking=no petrich@46.161.6.169 <<'EOF'
+            git clone https://github.com/kubernetes-sigs/kubespray.git
+            git clone https://github.com/Petrichao/otus_project.git
+            cd kubespray
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+            ansible-playbook -i /home/petrich/otus_project/otus-cluster/inventory.ini -b -v --private-key=~/.ssh/id_rsa cluster.yml
+
+            sudo kubectl apply -f /home/petrich/otus_project/manifests/argocd/ns-argocd.yaml
+            sudo kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+            sudo kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.basehref":"/argocd"}}'
+            sudo kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.rootpath":"/argocd"}}'
+            sudo kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.insecure":"true"}}'
+
+            sudo kubectl apply -f /home/petrich/otus_project/manifests/argocd/svc-argocd-proxy.yaml
+            sudo kubectl delete pod -n argocd -l app.kubernetes.io/name=argocd-server
+
+            sudo kubectl apply -f /home/petrich/otus_project/manifests/app-of-apps.yaml
         EOF
