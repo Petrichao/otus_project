@@ -8,9 +8,10 @@ spec:
   source:
     repoURL: https://grafana.github.io/helm-charts
     chart: grafana
+    targetRevision: 9.2.10
     helm:
       valueFiles:
-        - ../grafana/v-grafana.yaml
+        - ../grafana/v-grafana.yaml      # Только если ты используешь values из этого же репо
       parameters: []
   destination:
     server: https://kubernetes.default.svc
