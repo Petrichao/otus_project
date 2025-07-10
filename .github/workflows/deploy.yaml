@@ -24,7 +24,14 @@ jobs:
             source venv/bin/activate
             pip install -r requirements.txt
             ansible-playbook -i /home/petrich/otus_project/otus-cluster/inventory.ini -b -v --private-key=~/.ssh/id_rsa cluster.yml
+            sudo helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 
+            sudo helm upgrade --install general-ingress ingress-nginx/ingress-nginx \
+              --namespace otus-proj \
+              --set controller.service.type=NodePort \
+              --set controller.service.nodePorts.http=30080 \
+              --set controller.ingressClassResource.name=general-nginx
+              
             sudo kubectl apply -f /home/petrich/otus_project/manifests/argocd/ns-argocd.yaml
             sudo kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
